@@ -1,0 +1,4 @@
+export const queries=`#graphql
+ verifyCredentialsToken(email:String!,password:String!): String
+ 
+`

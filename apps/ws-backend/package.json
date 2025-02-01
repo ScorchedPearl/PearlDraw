@@ -2,18 +2,26 @@
   "name": "ws-backend",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node build/index.js",
     "build": "tsc -p .",
     "dev": "tsc-watch --onSuccess \"npm start\""
   },
   "dependencies": {
-    "@repo/typescript-config": "workspace:*",
     "@types/express": "^5.0.0",
     "@types/ws": "^8.5.13",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "jose": "^5.9.6",
     "tsc-watch": "^6.2.1",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "@repo/db": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@repo/common-pack": "workspace:*",
+    "@repo/common": "workspace:*"
   },
   "keywords": [],
   "author": "",

@@ -1,10 +1,10 @@
-import express from "express";
-const app=express();
+import { initServer } from "./app";
+import * as dotenv from "dotenv"
+dotenv.config();
+const PORT=8000;
+async function init(){
+  const app=await initServer();
 
-
-app.get("/",(req,res)=>{
-    res.send("Hello World");
-})
-app.listen(8000,()=>{
- console.log("Server is running on port 8000");
-});
+  app.listen(PORT,()=>console.log(`server started at PORT: ${PORT}`));
+}
+init();
