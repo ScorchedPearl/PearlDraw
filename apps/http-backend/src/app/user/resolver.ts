@@ -1,11 +1,19 @@
 import { GraphqlContext } from "../../interfaces";
 import UserService from "../../services/userService";
-import { CreateCredentialsTokenType, VerifyCredentialsTokenType } from "./types";
+import { CreateCredentialsTokenType, CreateRoomType, VerifyCredentialsTokenType } from "./types";
 const queries={
  verifyCredentialsToken:async(parent:any,payload:VerifyCredentialsTokenType)=>{
   const session=UserService.verifyCredentialsToken(payload);
   return session;
  },
+ getAllChats:async(parent:any,{room}:{room:string},ctx:GraphqlContext)=>{
+  const id=ctx.user?.id;
+  if(!id){
+   throw new Error("Unauthorized");
+  }
+  const chats=await UserService.getAllChats(room);
+  return chats;
+ }
 }
 const mutations={
  createCredentialsToken:async(parent:any,payload:CreateCredentialsTokenType)=>{
@@ -16,12 +24,12 @@ const mutations={
   const session=UserService.verifyGoogleAuthToken(token);
   return session;
  },
- createRoom:async(parent:any,{slug}:{slug:string},ctx:GraphqlContext)=>{
+ createRoom:async(parent:any,payload:CreateRoomType,ctx:GraphqlContext)=>{
   const id=ctx.user?.id;
   if(!id){
    throw new Error("Unauthorized");
   }
-  const room=await UserService.createRoom(slug,id);
+  const room=await UserService.createRoom(payload,id);
   return room;
  },
 }

@@ -1,7 +1,7 @@
 import { jwtVerify } from "jose";
 import { JWTUser } from "../interfaces";
 import dotenv from "dotenv";
-import { JWTPayload } from "./interfaces";
+import { JWTPayload } from "./interfaces"
 import { JWT_SECRET } from "@repo/common-pack/config";
 dotenv.config();
 

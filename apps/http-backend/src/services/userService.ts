@@ -2,9 +2,8 @@ import axios from "axios";
 import { prismaClient } from "@repo/db/client";
 import { GoogleTokenResult } from "./interfaces.js"
 import JWTService from "./jwtService.js";
-import { CreateCredentialsTokenType, VerifyCredentialsTokenType } from "../app/user/types.js";
+import { CreateCredentialsTokenType, CreateRoomType, VerifyCredentialsTokenType } from "../app/user/types.js";
 import { CreateRoomSchema, SignInSchema } from "@repo/common/types";
-import { GraphqlContext } from "../interfaces.js";
 class UserService {
  public static async verifyGoogleAuthToken(token: string){
   const googletoken = token;
@@ -86,14 +85,23 @@ class UserService {
   const session=await JWTService.generateTokenForUser(userInDb);
   return session
  }
- public static async createRoom(slug: string,adminId: string){
-  const parsedData=CreateRoomSchema.safeParse({slug});
+ public static async createRoom(payload:CreateRoomType,adminId:string){
+  const parsedData=CreateRoomSchema.safeParse(payload);
   if(!parsedData.success){
    throw new Error("Invalid Data");
   }
+  const roominDb=await prismaClient.room.findUnique({
+   where:{
+    slug:payload.slug as string,
+   }
+  });
+  if(roominDb){
+   throw new Error("Room Already Exists");
+  }
   const room=await prismaClient.room.create({
    data: {
-    slug: slug,
+    slug: payload.slug as string,
+    password: payload.password as string,
     admin: {
      connect: {
       id: adminId,
@@ -102,6 +110,26 @@ class UserService {
    }
   })
   return room;
+ }
+ public static async getAllChats(room:string){
+  const roomInDb=await prismaClient.room.findUnique({
+   where:{
+    slug:room,
+   }
+  })
+  if(!roomInDb){
+   throw new Error("Room not found");
+  }
+  const chats = await prismaClient.chat.findMany({
+   where: {
+   roomId: room,
+   },
+   orderBy: {
+   createdAt: 'asc',
+   },
+   take: 50,
+  })
+  return chats;
  }
 }
 export default UserService;

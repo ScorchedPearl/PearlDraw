@@ -42,7 +42,3 @@ class JWTService{
  }
 }
 export default JWTService;
-
-export function generateTokenForUser(userInDb: { id: string; email: string; name: string; password: string | null; profilePhotoURL: string | null; createdAt: Date; updatedAt: Date; }) {
- throw new Error("Function not implemented.");
-}
