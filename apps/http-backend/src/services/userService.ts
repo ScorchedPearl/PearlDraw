@@ -18,10 +18,6 @@ class UserService {
   const user = await prismaClient.user.findUnique({
    where:{email:data.email}
   })
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@iiita\.ac\.in$/;
-  if (!emailRegex.test(data.email)) {
-   throw new Error("Invalid email format. Email must be of the type xyz@iiita.ac.in");
-  }
   if (!user) {
    await prismaClient.user.create({
     data: {
@@ -124,12 +120,26 @@ class UserService {
    where: {
    roomId: room,
    },
+   include: {
+   user: true,
+   },
    orderBy: {
    createdAt: 'asc',
    },
    take: 50,
   })
   return chats;
+ }
+ public static async getCurrentUser(id:string){
+  const user=await prismaClient.user.findUnique({
+   where:{
+    id:id,
+   }
+  })
+  if(!user){
+   throw new Error("User not found");
+  }
+  return user;
  }
 }
 export default UserService;

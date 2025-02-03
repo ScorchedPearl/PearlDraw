@@ -1,19 +1,50 @@
-import Image from "next/image";
-export default function Navbar(){
- return(
-  <>
-  <div className="bg-transparent fixed top-0 left-0 w-full text-center items-center justify-center pt-5">
-   <div className="h-12 w-3/4 mx-auto flex justify-between items-center p-4 rounded-3xl shadow-slate-700 shadow-md bg-2 bg-slate-300/50">
-   <div className="flex items-center">
-    <Image src="next.svg" width={60} height={70} alt="Logo" className="text-zinc-500"></Image>
-    <h1 className="text-2xl font-bold text-gray-800 p-4">PearlDraw</h1>
-   </div>
-   <div className="flex items-center">
-    <a href="/signin" className="mx-2 text-gray-800 hover:text-orange-300">Login</a>
-    <a href="/signup" className="mx-2 text-gray-800 hover:text-orange-300">Register</a>
-   </div>
-   </div>
-  </div>
-  </>
- );
+"use client";
+import { Paintbrush2 } from "lucide-react";
+import { useEffect, useState } from "react";
+
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <nav
+      className={`fixed w-full z-50 transition-all duration-300 ${
+        scrolled ? "bg-black/50 backdrop-blur-xl shadow-lg border-b border-white/10 py-4" : "py-6"
+      }`}
+    >
+      <div className="container mx-auto px-6 flex justify-between items-center">
+        {/* Logo */}
+        <div className="flex items-center space-x-3">
+          <Paintbrush2 className="w-8 h-8 text-cyan-400" />
+          <span className="text-2xl font-bold bg-gradient-to-r from-teal-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">
+            PearlDraw
+          </span>
+        </div>
+
+        {/* Navigation Links */}
+        <div className="hidden md:flex items-center space-x-8">
+          <a href="#features" className="text-gray-300 hover:text-cyan-400 transition-colors duration-300">
+            About Me
+          </a>
+          <a href="#gallery" className="text-gray-300 hover:text-cyan-400 transition-colors duration-300">
+            Contact Us
+          </a>
+          <a
+            className="bg-gradient-to-r from-teal-400 via-cyan-400 to-cyan-500 px-6 py-2 rounded-full font-medium text-black transition-all hover:opacity-90 hover:shadow-lg hover:shadow-cyan-500/50"
+            href="/signin"
+          >
+            Start Creating
+          </a>
+        </div>
+      </div>
+    </nav>
+  );
 }

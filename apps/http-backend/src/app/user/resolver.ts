@@ -13,7 +13,15 @@ const queries={
   }
   const chats=await UserService.getAllChats(room);
   return chats;
- }
+ },
+ getCurrentUser:async(parent:any,args:any,ctx:GraphqlContext)=>{
+  const id=ctx.user?.id;
+  if(!id){
+   throw new Error("Unauthorized");
+  }
+  const user=await UserService.getCurrentUser(id);
+  return user;
+ },
 }
 const mutations={
  createCredentialsToken:async(parent:any,payload:CreateCredentialsTokenType)=>{

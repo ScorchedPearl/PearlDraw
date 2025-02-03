@@ -27,5 +27,12 @@ type Chat{
  updatedAt: String!
  roomId: String!
  userId: String!
+ user: User!
+}
+type User{
+ id:ID!
+ email:String!
+ name:String!
+ profilePhotoURL:String
 }
 `
