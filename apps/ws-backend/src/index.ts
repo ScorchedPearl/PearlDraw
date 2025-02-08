@@ -32,8 +32,9 @@ wss.on("connection", async(ws,request) => {
     if(parsedData.type==="chat_in_room"){
       RoomService.chatInRoom(parsedData.room,ws,parsedData.message);
     }
+    if(parsedData.type==="shape"){
+      RoomService.drawingArea(parsedData.room,ws,parsedData.message,parsedData.width,parsedData.height);
+    }
   });
-
-  ws.send("Hello! Message from server!");
 }
 );

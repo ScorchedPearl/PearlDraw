@@ -6,19 +6,22 @@ export const createCredentialsTokenMutation = graphql(`#graphql
 }
 `)
 export const createRoomMutation = graphql(`#graphql
- mutation CreateRoom($slug: String!, $password: String!) {
-  createRoom(slug: $slug, password: $password) {
+ mutation CreateRoom($slug: String!, $password: String!, $tags: [String]) {
+  createRoom(slug: $slug, password: $password, tags: $tags) {
     slug
-    updatedAt
     password
-    id
-    adminId
-    createdAt
+    tags
   }
 }
 `)
 export const verifyGoogleTokenMutation = graphql(`#graphql
  mutation VerifyGoogleToken($token: String!) {
   verifyGoogleToken(token: $token)
+}
+`)
+
+export const changePasswordMutation = graphql(`#graphql
+  mutation ChangePassword($email: String!, $newPassword: String!) {
+  changePassword(email: $email, newPassword: $newPassword)
 }
 `)

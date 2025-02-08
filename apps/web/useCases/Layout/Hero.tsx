@@ -1,5 +1,6 @@
+"use client"
 import FeatureCard from "@utils/components/self/featureCard";
-import { Download, Palette, Shapes, Sparkles, Wand2 } from "lucide-react";
+import { Palette, Shapes, Sparkles, Wand2 } from "lucide-react";
 import { UserPlus as Follow } from "lucide-react";
 export default function Hero() {
   return (

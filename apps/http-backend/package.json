@@ -9,18 +9,20 @@
   },
   "dependencies": {
     "@apollo/server": "^4.11.3",
+    "@repo/db": "workspace:*",
     "@types/cors": "^2.8.17",
+    "@types/nodemailer": "^6.4.17",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "nodemailer": "^6.10.0",
     "tsc-watch": "^6.2.1",
-    "typescript": "^5.7.3",
-    "@repo/db": "workspace:*"
+    "typescript": "^5.7.3"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
+    "@repo/common": "workspace:*",
     "@repo/common-pack": "workspace:*",
-    "@repo/common": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
   },
   "keywords": [],
   "author": "",

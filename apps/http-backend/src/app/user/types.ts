@@ -10,6 +10,17 @@ export interface VerifyCredentialsTokenType{
 export interface CreateRoomType{
  slug:String,
  password:String,
+ tags:String[]
+}
+export interface CheckRoomPasswordType{
+ password:String,
+ room:String,
+}
+export interface DrawingArea{
+ id:String,
+ area:String,
+ roomId:String,
+ userId:String,
 }
 export const Types=`#graphql
 type Room{
@@ -19,6 +30,8 @@ type Room{
  createdAt: String!
  updatedAt: String!
  adminId: String!
+ tags:[String]!
+ admin:User
 }
 type Chat{
  id:ID!
@@ -34,5 +47,12 @@ type User{
  email:String!
  name:String!
  profilePhotoURL:String
+}
+type DrawingArea{
+ id:String,
+ area:String,
+ roomId:String,
+ userId:String,
+ user:User,
 }
 `

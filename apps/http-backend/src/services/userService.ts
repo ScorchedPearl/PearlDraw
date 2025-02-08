@@ -2,8 +2,9 @@ import axios from "axios";
 import { prismaClient } from "@repo/db/client";
 import { GoogleTokenResult } from "./interfaces.js"
 import JWTService from "./jwtService.js";
-import { CreateCredentialsTokenType, CreateRoomType, VerifyCredentialsTokenType } from "../app/user/types.js";
-import { CreateRoomSchema, SignInSchema } from "@repo/common/types";
+import { CreateCredentialsTokenType, VerifyCredentialsTokenType } from "../app/user/types.js";
+import { SignInSchema } from "@repo/common/types";
+import nodemailer from "nodemailer";
 class UserService {
  public static async verifyGoogleAuthToken(token: string){
   const googletoken = token;
@@ -81,55 +82,6 @@ class UserService {
   const session=await JWTService.generateTokenForUser(userInDb);
   return session
  }
- public static async createRoom(payload:CreateRoomType,adminId:string){
-  const parsedData=CreateRoomSchema.safeParse(payload);
-  if(!parsedData.success){
-   throw new Error("Invalid Data");
-  }
-  const roominDb=await prismaClient.room.findUnique({
-   where:{
-    slug:payload.slug as string,
-   }
-  });
-  if(roominDb){
-   throw new Error("Room Already Exists");
-  }
-  const room=await prismaClient.room.create({
-   data: {
-    slug: payload.slug as string,
-    password: payload.password as string,
-    admin: {
-     connect: {
-      id: adminId,
-     }
-    }
-   }
-  })
-  return room;
- }
- public static async getAllChats(room:string){
-  const roomInDb=await prismaClient.room.findUnique({
-   where:{
-    slug:room,
-   }
-  })
-  if(!roomInDb){
-   throw new Error("Room not found");
-  }
-  const chats = await prismaClient.chat.findMany({
-   where: {
-   roomId: room,
-   },
-   include: {
-   user: true,
-   },
-   orderBy: {
-   createdAt: 'asc',
-   },
-   take: 50,
-  })
-  return chats;
- }
  public static async getCurrentUser(id:string){
   const user=await prismaClient.user.findUnique({
    where:{
@@ -140,6 +92,50 @@ class UserService {
    throw new Error("User not found");
   }
   return user;
+ }
+ public static async sendOtpEmail(email:string,otp:string){
+   try {
+     const transporter = nodemailer.createTransport({
+       service: 'gmail',
+       secure: true,
+       port: 465,
+       auth: {
+         user: "pearlautherizer@gmail.com",
+         pass: "egjvzollbsxedjni",
+       }
+     });
+ 
+     const mailOptions = {
+       from: "pearlautherizer@gmail.com",
+       to: email,
+       subject: 'Email Verification OTP',
+       text: `Your OTP for email verification is: ${otp}. It is valid for 10 minutes.`,
+     };  
+     await transporter.sendMail(mailOptions);
+     return true;
+   } catch (error) {
+     console.error('Error sending OTP email:', error);
+     return false;
+   }
+ }
+ public static async changePassword(email:string,newPassword:string){
+  const user=await prismaClient.user.findUnique({
+   where:{
+    email:email,
+   }
+  })
+  if(!user){
+   throw new Error("User not found");
+  }
+  await prismaClient.user.update({
+   where:{
+    email:email,
+   },
+   data:{
+    password:newPassword,
+   }
+  })
+  return true;
  }
 }
 export default UserService;
