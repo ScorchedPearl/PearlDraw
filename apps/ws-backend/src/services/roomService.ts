@@ -42,10 +42,6 @@ class RoomService {
     user.rooms.splice(index, 1);
   }
   public static async chatInRoom(room: string, ws: WebSocket, message: string) {
-    if(message.length>500){
-      ws.send("Message too long");
-      return;
-    } 
     console.log("chatInRoom", room, ws, message);
     await prismaClient.chat.create({
       data: {
@@ -64,48 +60,72 @@ class RoomService {
        }
      });
   }
-  public static async drawingArea(room: string, ws: WebSocket, message: string,width:number,height:number){
-    console.log(room);
-    const imgData = new ImageData(Uint8ClampedArray.from(message),width,height);
-    const uniqueFileName = `drawing_${room}_${Date.now()}.png`;
-    const imageUrl = await this.uploadImage(imgData, uniqueFileName);
-    if (imageUrl) {
-      console.log('Image uploaded successfully:', imageUrl);
-    } else {
-      console.error('Image upload failed');
-    }
-    // await prismaClient.drawingArea.create({
-    //   data:{
-    //     roomId:room,
-    //     area:imageUrl?.data as string,
-    //     userId:users.find((u)=>u.ws===ws)?.userid as string
-    //   },
-    // });
-    users.forEach((u)=>{
-      if(u.rooms.includes(room)){
-        u.ws.send(JSON.stringify({
-          type:"shape",
-          message:message,
-          room:room,
-        }));
-      }
-    });
-  }
-  public static async uploadImage(imageData: ImageData, fileName: string) {
-    const blob = new Blob([imageData.data.buffer], { type: 'image/png' });
-    const file = new File([blob], fileName, { type: 'image/png' });
+  // public static async drawingArea(room: string, ws: WebSocket, message: string,width:number,height:number){
+  //   console.log(room);
+  //   const imgData = new ImageData(Uint8ClampedArray.from(message),width,height);
+  //   const uniqueFileName = `drawing_${room}_${Date.now()}.png`;
+  //   const imageUrl = await this.uploadImage(imgData, uniqueFileName);
+  //   if (imageUrl) {
+  //     console.log('Image uploaded successfully:', imageUrl);
+  //   } else {
+  //     console.error('Image upload failed');
+  //   }
+  //   // await prismaClient.drawingArea.create({
+  //   //   data:{
+  //   //     roomId:room,
+  //   //     area:imageUrl?.data as string,
+  //   //     userId:users.find((u)=>u.ws===ws)?.userid as string
+  //   //   },
+  //   // });
+  //   users.forEach((u)=>{
+  //     if(u.rooms.includes(room)){
+  //       u.ws.send(JSON.stringify({
+  //         type:"shape",
+  //         message:message,
+  //         room:room,
+  //       }));
+  //     }
+  //   });
+  // }
+  // public static async uploadImage(imageData: ImageData, fileName: string) {
+  //   const blob = new Blob([imageData.data.buffer], { type: 'image/png' });
+  //   const file = new File([blob], fileName, { type: 'image/png' });
 
-    const { data, error } = await supabase
-      .storage
-      .from('PearlDrawBucket')
-      .upload(`images/${file.name}`, file);
+  //   const { data, error } = await supabase
+  //     .storage
+  //     .from('PearlDrawBucket')
+  //     .upload(`images/${file.name}`, file);
   
-    if (error) {
-      console.error('Upload failed:', error.message);
-      return null;
+  //   if (error) {
+  //     console.error('Upload failed:', error.message);
+  //     return null;
+  //   }
+  
+  //   return supabase.storage.from('PearlDrawBucket').getPublicUrl(data.path);
+  // }
+  public static async undo(room: string, ws: WebSocket,message:string) {
+    const lastShape = await prismaClient.chat.findFirst({
+      where: { roomId: room },
+      orderBy: { createdAt: "desc" },
+    });
+    if (lastShape) {
+      const parsedLastShape = JSON.parse(lastShape.message);
+      const parsedUndoShape = JSON.parse(message);
+      if (JSON.stringify(parsedLastShape) === JSON.stringify(parsedUndoShape)) {
+        await prismaClient.chat.delete({
+          where: { id: lastShape.id },
+        });
+
+        users.forEach((u)=>{
+          if(u.rooms.includes(room)){
+            u.ws.send(JSON.stringify({
+              type:"undo",
+              message:message,
+              room:room,
+          }));
+        }});
+      }
     }
-  
-    return supabase.storage.from('PearlDrawBucket').getPublicUrl(data.path);
   }
 }
 export default RoomService;

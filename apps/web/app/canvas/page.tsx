@@ -7,8 +7,26 @@ import { useGetAllRooms } from "hooks/user";
 
 
 export default function RoomJoinPage() {
-  const data=useGetAllRooms();
-  const roomsData = data.rooms?.map((room, index) => ({
+  interface Room {
+    id: number;
+    name: string;
+    participants: string;
+    tags: string[];
+  }
+
+  interface RoomData {
+    slug: string;
+    admin: { name: string };
+    tags: string[];
+  }
+
+  interface Data {
+    rooms?: RoomData[];
+  }
+
+  const data: Data = useGetAllRooms();
+
+  const roomsData: Room[] = data.rooms?.map((room, index) => ({
     id: index + 1,
     name: room?.slug as string,
     participants: room?.admin?.name as string,

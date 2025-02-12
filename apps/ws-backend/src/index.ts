@@ -29,11 +29,14 @@ wss.on("connection", async(ws,request) => {
     if(parsedData.type==="leave_room"){
       RoomService.leaveRoom(parsedData.room,ws);
     }
-    if(parsedData.type==="chat_in_room"){
+    if(parsedData.type==="chat_in_room"||parsedData.type==="shape"){
       RoomService.chatInRoom(parsedData.room,ws,parsedData.message);
     }
-    if(parsedData.type==="shape"){
-      RoomService.drawingArea(parsedData.room,ws,parsedData.message,parsedData.width,parsedData.height);
+    // if(parsedData.type==="shape"){
+    //   RoomService.drawingArea(parsedData.room,ws,parsedData.message,parsedData.width,parsedData.height);
+    // }
+    if(parsedData.type==="undo"){
+      RoomService.undo(parsedData.room,ws,parsedData.message);
     }
   });
 }

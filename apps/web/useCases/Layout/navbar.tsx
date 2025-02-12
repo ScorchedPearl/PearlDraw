@@ -1,10 +1,12 @@
 "use client";
 import { useGetCurrentUser } from "hooks/user";
 import { Paintbrush2 } from "lucide-react";
+import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const currentUser = useGetCurrentUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,8 +16,13 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  const currentUser = useGetCurrentUser();
-  console.log(currentUser.data);
+
+  const handleSignOut =() => {
+
+      localStorage.removeItem("__Pearl_Token");
+      redirect("/auth");
+  };
+
   return (
     <nav
       className={`fixed w-full z-50 transition-all duration-300 ${
@@ -45,17 +52,25 @@ export default function Navbar() {
           >
             Contact Us
           </a>
-          {currentUser.user? (
-            <a
-              href="/canvas"
-              className="bg-gradient-to-r from-teal-400 via-cyan-400 to-cyan-500 px-6 py-2 rounded-full font-medium text-black transition-all hover:opacity-90 hover:shadow-lg hover:shadow-cyan-500/50"
-            >
-              Canvas
-            </a>
+          {currentUser.user ? (
+            <>
+              <a
+                href="/canvas"
+                className="bg-gradient-to-r from-teal-400 via-cyan-400 to-cyan-500 px-6 py-2 rounded-full font-medium text-black transition-all hover:opacity-90 hover:shadow-lg hover:shadow-cyan-500/50"
+              >
+                Canvas
+              </a>
+              <button
+                onClick={()=>handleSignOut()}
+                className="bg-gradient-to-r from-teal-400 via-cyan-400 to-cyan-500 px-6 py-2 rounded-full font-medium text-black transition-all hover:opacity-90 hover:shadow-lg hover:shadow-cyan-500/50"
+              >
+                Sign Out
+              </button>
+            </>
           ) : (
             <a
-              className="bg-gradient-to-r from-teal-400 via-cyan-400 to-cyan-500 px-6 py-2 rounded-full font-medium text-black transition-all hover:opacity-90 hover:shadow-lg hover:shadow-cyan-500/50"
               href="/auth"
+              className="bg-gradient-to-r from-teal-400 via-cyan-400 to-cyan-500 px-6 py-2 rounded-full font-medium text-black transition-all hover:opacity-90 hover:shadow-lg hover:shadow-cyan-500/50"
             >
               Start Creating
             </a>

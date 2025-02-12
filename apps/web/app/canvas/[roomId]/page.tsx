@@ -15,7 +15,7 @@ export default function Page() {
    icon: (
     <IconBrush className="h-full w-full text-neutral-500 dark:text-neutral-300" />
    ),
-   shape: "freehand",
+   shape: "brush",
   },
   {
    title: "Pointer",
@@ -50,7 +50,7 @@ export default function Page() {
    icon: (
     <IconTriangle className="h-full w-full text-neutral-500 dark:text-neutral-300" />
    ),
-   shape: "Triangle",
+   shape: "triangle",
   },
   {
    title: "Arrow",
@@ -82,16 +82,16 @@ export default function Page() {
  const password = queryParams.get('password') as string;
  console.log(password);
  const {loading,socket}=useSocket(roomId,password);
- type Shape = 'rectangle' | 'circle' | 'line' | 'freehand' | 'square' | 'arrow' | 'eraser';
- const [currentShape, setCurrentShape] = useState<Shape>('freehand');
+type Shape = 'rectangle' | 'circle' | 'line' | 'freehand' | 'square' | 'arrow' | 'eraser' | 'triangle'|'pointer';
+  const [currentShape, setCurrentShape] = useState<Shape>('freehand');
   const [color, setColor] = useState('#000000');
   const [lineWidth, setLineWidth] = useState(2);
 
  if(loading||!socket) return <div><BlockSwapLoader></BlockSwapLoader></div>
  return (
  <div className="h-screen w-screen">
-  <Canvas2 currentShape={currentShape} color={color} lineWidth={lineWidth} room={roomId} socket={socket}></Canvas2>
-   {/* <Canvas socket={socket}></Canvas> */}
+  {/* <Canvas2 currentShape={currentShape} color={color} lineWidth={lineWidth} room={roomId} socket={socket}></Canvas2> */}
+   <Canvas socket={socket}></Canvas>
   <FloatingDock desktopClassName="absolute bottom-4 left-4"
         items={links}
         lineWidth={lineWidth} color={color}

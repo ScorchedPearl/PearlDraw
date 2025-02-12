@@ -11,7 +11,7 @@ import {
 } from "framer-motion";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { Button } from "../ui/button";
-type Shape = 'rectangle' | 'circle' | 'line' | 'freehand' | 'square' | 'arrow' | 'eraser';
+type Shape = 'rectangle' | 'circle' | 'line' | 'freehand' | 'square' | 'arrow' | 'eraser' | 'triangle' | 'pointer';
 export const FloatingDock = ({
   items,
   desktopClassName,
@@ -85,7 +85,7 @@ const FloatingDockMobile = ({
                 transition={{ delay: (items.length - 1 - idx) * 0.05 }}
               >
                 <Button
-                  onClick={() => setCurrentShape(item.shape as Shape)}
+                  onClick={() => {setCurrentShape(item.shape as Shape); localStorage.setItem('PearlShape',item.shape)}}
                   key={item.title}
                   className="h-10 w-10 rounded-full bg-gray-50 dark:bg-neutral-900 flex items-center justify-center"
                 >
@@ -255,7 +255,7 @@ function IconContainer({
         <motion.div
           style={{ width: widthIcon, height: heightIcon }}
           className="flex items-center justify-center" 
-          onClick={() => setCurrentShape(shape as Shape)}
+          onClick={() => {setCurrentShape(shape as Shape); localStorage.setItem('PearlShape',shape)}}
         >
           {icon}
         </motion.div>
